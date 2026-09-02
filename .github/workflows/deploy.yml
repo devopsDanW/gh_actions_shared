@@ -1,0 +1,32 @@
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+    secrets:
+      aws-role-arn:
+        required: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+      - name: configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.aws-role-arn }}
+          aws-region: ap-southeast-2
+      - name: run to deploy
+        run: make deploy ENV=${{ inputs.environment }}
+
+
+
+
+
+
