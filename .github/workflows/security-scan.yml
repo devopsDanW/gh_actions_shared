@@ -1,0 +1,40 @@
+name: Reusable Security Pipeline
+on:
+  workflow_call:
+    inputs:
+      runs_on:
+        description: "The runner to use for the job"
+        type: string
+        default: "ubuntu-latest"
+
+      scan_path:
+        description: "The path to scan for vulnerabilities"
+        type: string
+        default: "."
+
+      severity:
+        description: "The severity level to scan for vulnerabilities"
+        type: string
+        default: "CRITICAL,HIGH"
+
+jobs:
+  trivy-scan:
+    name: SCA + configuration + secret
+    runs-on: ${{ inputs.runs_on }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: "fs"
+          scanners: "vuln,secret,misconfig"
+          scan-ref: ${{ inputs.scan_path }}
+          severity: ${{ inputs.severity }}
+          exit-code: "1"
+
+
+
+
+
+
+
+
